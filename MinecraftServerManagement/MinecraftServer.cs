@@ -1,10 +1,9 @@
 ﻿using Newtonsoft.Json;
 using System;
-using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Net;
-using System.Timers;
-using System.Windows;
+using System.Threading;
 using static MinecraftServerManagement.OutPutEvent;
 
 namespace MinecraftServerManagement
@@ -33,8 +32,8 @@ namespace MinecraftServerManagement
 
         private readonly string apiUrl;
         private serverInfo server;
-        private Timer timer;
-        private int lastOutput;
+        private Thread check;
+        private int lastOutputLenght;
 
         public event OutputEventHandler OnOutputReceived;
 
@@ -42,46 +41,37 @@ namespace MinecraftServerManagement
         {
             apiUrl = "http://" + serverIp + "/api/v1/";
             server = new serverInfo();
-            timer = new Timer(refreshRate);
+            check = new Thread(() => CheckServer(refreshRate));
+            lastOutputLenght = 0;
         }
 
-        public void initialize()
-        {
-            CheckServer();
-            timer.Elapsed += Timer_Elapsed;
-            timer.AutoReset = true;
-            timer.Enabled = true;
-        }
+        public void initialize() => check.Start();
 
-        public void Dispose()
-        {
-            if (timer.Enabled)
-                timer.Dispose();
-        }
+        public void Dispose() => check?.Abort();
 
-        private void Timer_Elapsed(object sender, ElapsedEventArgs e) => CheckServer();
-
-        private void CheckServer()
+        private void CheckServer(int refreshRate)
         {
-            try
+            while (true)
             {
-                GetServerStatus();
-                status = server.status;
-                cpu = float.Parse(server.cpu.Replace(".", ","));
-                ram = float.Parse(server.ram.Replace(".", ","));
-                if (server.status != "Closed")
+                try
                 {
-                    string[] output = GetServerOutput().Split('\n');
-                    if (output.Length != lastOutput)
+                    GetServerStatus();
+                    status = server.status;
+                    cpu = float.Parse(server.cpu.Replace(".", ","));
+                    ram = float.Parse(server.ram.Replace(".", ","));
+                    if (server.status != "Closed")
                     {
-                        for (int i = lastOutput; i < output.Length; i++)
-                            if (output[i].Length > 0)
-                                OnOutputReceived.Invoke(new OutputEventArgs(output[i]));
-                        lastOutput = output.Length;
+                        string[] output = GetServerOutput().Split('\n');
+                        int currentLenght = lastOutputLenght;
+                        lastOutputLenght = output.Length;
+
+                        if (currentLenght != output.Length)
+                            OnOutputReceived.Invoke(new OutputEventArgs(output.Skip(currentLenght).ToArray()));
                     }
                 }
+                catch { }
+                Thread.Sleep(refreshRate);
             }
-            catch { }
         }
 
         private string get(string endPoint, string args = "")
@@ -122,7 +112,10 @@ namespace MinecraftServerManagement
             return html;
         }
 
-        public void Start() => get("server/start");
+        public void Start() {
+            lastOutputLenght = 0;
+            get("server/start");
+        }
 
         public void Stop() => get("server/stop");
 

@@ -209,10 +209,12 @@ namespace MinecraftServerManagement
 
         private void Server_OnOutputReceived(OutPutEvent.OutputEventArgs e)
         {
-            Console.AppendText(e.Output);
+            foreach (string line in e.Lines)
+                if (line.Length > 0)
+                    Console.AppendText(line.Replace("\r", ""));
         }
 
-        private void Controls_OnCommandSend(OutPutEvent.OutputEventArgs e)
+        private void Controls_OnCommandSend(OutPutEvent.CommandEventArgs e)
         {
             if (MinecraftServer.status == "Ready")
             {

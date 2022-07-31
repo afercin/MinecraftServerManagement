@@ -7,21 +7,24 @@ namespace MinecraftServerManagement
         public delegate void OutputEventHandler(OutputEventArgs e);
         public class OutputEventArgs : EventArgs
         {
-            public string Output = "";
+            public string[] Lines;
 
-            public OutputEventArgs(string output)
+            public OutputEventArgs(string[] lines)
                 : base()
             {
-                Output = output;
+                Lines = lines;
             }
         }
 
-        public delegate void StatusEventHandler(StatusEventArgs e);
-        public class StatusEventArgs : EventArgs
+        public delegate void CommandEventHandler(CommandEventArgs e);
+        public class CommandEventArgs : EventArgs
         {
-            public StatusEventArgs()
+            public string Output;
+
+            public CommandEventArgs(string output)
                 : base()
             {
+                Output = output;
             }
         }
     }

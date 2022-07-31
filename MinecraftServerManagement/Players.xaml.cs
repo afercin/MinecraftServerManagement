@@ -74,7 +74,7 @@ namespace MinecraftServerManagement
         {
             DataGrid grid = sender as DataGrid;
             if (!string.IsNullOrEmpty(action) && grid.SelectedItem != null)
-                OnPlayerSelect.Invoke(new OutputEventArgs(action + " " + grid.CurrentItem.ToString()));
+                OnPlayerSelect.Invoke(new OutputEventArgs(new string[] { action + " " + grid.CurrentItem.ToString() }));
         }
 
         private void DataGrid_MouseUp(object sender, MouseButtonEventArgs e) => (sender as DataGrid).SelectedItem = null;

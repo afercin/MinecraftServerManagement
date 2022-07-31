@@ -11,7 +11,7 @@ namespace MinecraftServerManagement
     /// </summary>
     public partial class Console : UserControl
     {
-        public event OutputEventHandler OnConsoleCommand;
+        public event CommandEventHandler OnConsoleCommand;
         public Console()
         {
             InitializeComponent();
@@ -27,14 +27,12 @@ namespace MinecraftServerManagement
                 TextRange tr = new TextRange(console.Document.ContentEnd, console.Document.ContentEnd);
                 SolidColorBrush color = Brushes.White;
 
-                if (text.Contains("[Internal INFO]"))
-                    color = new BrushConverter().ConvertFrom("#3dbcf1") as SolidColorBrush;
-                else if (text.Contains("INFO"))
-                    color = Brushes.DarkCyan;
-                else if (text.Contains("WARN"))
-                    color = Brushes.Yellow;
-                else if (text.Contains("ERROR") || text.Contains("Exception") || text.EndsWith("}") || (text.Contains("...") && text.Contains("more")))
-                    color = Brushes.Red;
+                if (text.Contains("[Internal INFO]"))   color = new BrushConverter().ConvertFrom("#3dbcf1") as SolidColorBrush;
+                else if (text.Contains("ERROR")
+                      || text.Contains("java.")
+                      || text.Contains("java:"))        color = Brushes.Red;
+                else if (text.Contains("INFO"))         color = Brushes.DarkCyan;
+                else if (text.Contains("WARN"))         color = Brushes.Yellow;
 
                 tr.Text = text + "\r\n";
                 tr.ApplyPropertyValue(TextElement.ForegroundProperty, color);
@@ -49,7 +47,7 @@ namespace MinecraftServerManagement
         {
             if (e.Key == Key.Enter && !string.IsNullOrEmpty(command.Text))
             {
-                OnConsoleCommand.Invoke(new OutputEventArgs(command.Text));
+                OnConsoleCommand.Invoke(new CommandEventArgs(command.Text));
                 command.Clear();
             }
         }
