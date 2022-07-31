@@ -1,0 +1,46 @@
+﻿<UserControl x:Class="MinecraftServerManagement.Players"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:MinecraftServerManagement"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="454.803">
+    <UserControl.Resources>
+        <ResourceDictionary Source="Styles.xaml"/>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <DataGrid x:Name="ConnectedPlayers" Margin="3,3,0,3" Grid.Column="0" Grid.Row="0" Style="{StaticResource DataGridStyle}" SelectedCellsChanged="DataGrid_SelectedCellsChanged" MouseUp="DataGrid_MouseUp">
+            <DataGrid.Columns>
+                <DataGridTextColumn Binding="{Binding}" Header="Conectados" Width="*" IsReadOnly="True"/>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <DataGrid x:Name="AllPlayers" Margin="-1,3,3,3" Grid.Column="1" Grid.Row="0" Style="{StaticResource DataGridStyle}" SelectedCellsChanged="DataGrid_SelectedCellsChanged" MouseUp="DataGrid_MouseUp">
+            <DataGrid.Columns>
+                <DataGridTextColumn Binding="{Binding}" Header="Todos" Width="*" IsReadOnly="True"/>
+            </DataGrid.Columns>
+        </DataGrid>
+        <RadioButton Name="op" Grid.Column="0" Grid.Row="1" Style="{StaticResource FlatRadioButtonStyle}" Click="Button_Click">
+            <TextBlock Text="OP"/>
+        </RadioButton>
+        <RadioButton Name="pardon" Grid.Column="0" Grid.Row="2" Style="{StaticResource FlatRadioButtonStyle}" Click="Button_Click">
+            <TextBlock Text="Pardon"/>
+        </RadioButton>
+        <RadioButton Name="kick" Grid.Column="1" Grid.Row="1" Style="{StaticResource FlatRadioButtonStyle}" Click="Button_Click">
+            <TextBlock Text="Kick"/>
+        </RadioButton>
+        <RadioButton Name="ban" Grid.Column="1" Grid.Row="2" Style="{StaticResource FlatRadioButtonStyle}" Click="Button_Click">
+            <TextBlock Text="Ban"/>
+        </RadioButton>
+    </Grid>
+</UserControl>
